@@ -27,9 +27,14 @@ try:
 	# 取れた画像をダウンロード
 	result = json.loads( opener.open(baseURL+'/posts/'+str(id)+'.json').read().decode('utf-8') )
 	target_url = result['file_url']
-	print(target_url + ' => ' + os.path.basename(target_url) )
+	save_name = os.path.basename(target_url)
 	
-	urllib.request.urlretrieve( baseURL+target_url, os.path.basename(target_url) )
+	# 重複ファイルチェック付き
+	if os.path.isfile(save_name):
+		print( save_name + ' already exists.' )
+	else:
+		print('=> ' + save_name )
+		urllib.request.urlretrieve( baseURL+target_url, os.path.basename(target_url) )
 	
 except IOError as e:
 	print(e)
