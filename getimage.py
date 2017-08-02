@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import json
 import urllib.request
+import os.path
 
 print("Hello! Chiya-chan!")
 
@@ -17,12 +18,19 @@ auth_handler = urllib.request.HTTPBasicAuthHandler(auth)
 opener = urllib.request.build_opener(auth_handler)
 urllib.request.install_opener( opener )
 
-# タグからランダムで一つポストを取得する
 try:
+	# タグからランダムで一つポストを取得する
 	result = json.loads( opener.open(baseURL+'/posts.json?tags=ujimatsu_chiya&limit=1&random=1').read().decode('utf-8') )
 	id = result[0]['id']
 	print( id )
+	
+	# 取れた画像をダウンロード
+	result = json.loads( opener.open(baseURL+'/posts/'+str(id)+'.json').read().decode('utf-8') )
+	target_url = result['file_url']
+	print(target_url + ' => ' + os.path.basename(target_url) )
+	
+	urllib.request.urlretrieve( baseURL+target_url, os.path.basename(target_url) )
+	
 except IOError as e:
-	print( e )
-
+	print(e)
 
